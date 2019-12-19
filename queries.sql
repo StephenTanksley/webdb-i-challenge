@@ -34,10 +34,11 @@ INSERT INTO Customers(CustomerName, ContactName, Address, City, PostalCode, Coun
 VALUES ('The Shire', 'Bilbo Baggins', '1 Hobbit-Hole', 'Bag End', '111', 'Middle Earth');
 
 -- Update Bilbo Baggins record so that the postal code changes to "11122"
+    --need to set the action first before the specific target. 
 
 UPDATE Customers
-WHERE CustomerName = 'The Shire'
 SET PostalCode = '11122';
+WHERE CustomerName = 'The Shire'
 
 -- (Stretch) Find a query to discover how many different cities are stored in the Customers table. Repeats should not be double counted
 
