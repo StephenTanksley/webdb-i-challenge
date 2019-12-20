@@ -1,5 +1,6 @@
 const express = require('express')
 const db = require('../data/dbConfig')
+const { validatePostId } = require('../middleware/validation')
 
 const router = express.Router()
 
@@ -12,7 +13,7 @@ router.get('/', async (req, res, next) => {
     }
 })
 
-router.get('/:id', validatePostId(), async (req, res, next) => {
+router.get('/:id', async (req, res, next) => {
     try {
         res.json(await db('accounts').where('id', req.params.id).first())
     }
@@ -27,8 +28,8 @@ router.post('/', async (req, res, next) => {
             name: req.body.name,
             budget: req.body.budget
         }
-        const [id] = await db('posts').insert(payload)
-        res.json(await db('posts')
+        const [id] = await db('accounts').insert(payload)
+        res.json(await db('accounts')
             .where('id', id)
             .first())
     }
@@ -37,16 +38,16 @@ router.post('/', async (req, res, next) => {
     }
 })
 
-router.put('/:id', validatePostId(), async (req, res, next) => {
+router.put('/:id', async (req, res, next) => {
     try {
         const payload = {
             name: req.body.name,
             budget: req.body.budget
         }
-        await db('posts')
+        await db('accounts')
                 .where("id", req.params.id)
                 .update(payload)
-        res.json(await db('posts')
+        res.json(await db('accounts')
                         .where('id', req.params.id)
                         .first())
     }
@@ -55,24 +56,28 @@ router.put('/:id', validatePostId(), async (req, res, next) => {
     }
 })
 
-router.delete('/:id', validatePostId(), async (req, res, next) => {
+router.delete('/:id', async (req, res, next) => {
     try {
-
+        await db('accounts').where('id', req.params.id).del()
+        res.status(204).end()
     }
     catch (error) {
         next(error)
     }
 })
 
+// async function validateAccountId(req, res, next) {
+// 	try {
+// 		const post = await db("accounts").where("id", req.params.id).first()
+// 		if (post) {
+// 			next()
+// 		} else {
+// 			res.status(404).json({ message: "Account not found." })
+// 		}
+// 	} catch (err) {
+// 		next(err)
+// 	}
+// }
 
-async const validatePostId = (req, res, next) => {
-    try {
-        const post = await db('posts').where('id', req.params.id).first()
-        if(post) {
-            next()
-        }
-    }
-    catch (error) {
-        next(error)
-    }
-}
+
+module.exports = router
